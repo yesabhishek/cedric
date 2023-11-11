@@ -25,7 +25,7 @@ Cedric is a Python library designed to streamline the process of setting up a Dj
 To use Cedric, install the library using the following command:
 
 ```bash
-pip install gecko
+pip install cedric
 ```
 
 ### Usage
@@ -35,7 +35,7 @@ pip install gecko
 2. Run the following command to start the Cedric setup:
 
 ```bash
-gecko setup
+cedric setup
 ```
 
 3. Answer the prompted questions to configure your Django application based on your preferences.
@@ -47,14 +47,14 @@ gecko setup
 Here's an example of how Cedric can be used:
 
 ```bash
-gecko setup
+cedric setup
 ```
 
 Follow the interactive prompts to provide information about your application, such as the application name, whether to use Docker, your preferred cloud provider, CSS framework, and database.
 
 ## Contributing
 
-Contributions are welcome! If you encounter issues or have suggestions for improvements, please open an issue or submit a pull request on the [Cedric GitHub repository](https://github.com/yesabhishek/gecko).
+Contributions are welcome! If you encounter issues or have suggestions for improvements, please open an issue or submit a pull request on the [Cedric GitHub repository](https://github.com/yesabhishek/cedric).
 
 ## License
 
