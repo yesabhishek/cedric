@@ -35,7 +35,7 @@ pip install cedric
 2. Run the following command to start the Cedric setup:
 
 ```bash
-cedric setup
+cedric-setup
 ```
 
 3. Answer the prompted questions to configure your Django application based on your preferences.
@@ -47,7 +47,7 @@ cedric setup
 Here's an example of how Cedric can be used:
 
 ```bash
-cedric setup
+cedric-setup
 ```
 
 Follow the interactive prompts to provide information about your application, such as the application name, whether to use Docker, your preferred cloud provider, CSS framework, and database.
