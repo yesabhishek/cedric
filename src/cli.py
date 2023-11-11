@@ -64,10 +64,10 @@ def configure_django_app(app_name, use_docker, use_drf, use_jwt, database):
 
 
 def main():
-    Art=text2art("GECKO")
+    Art=text2art("CEDRIC")
     print(Art)
     print(
-        "🚀 Welcome to GECKO Django Template – because even coding wizards need a magic wand! 🧙\n\n"
+        "🚀 Welcome to CEDRIC Django Template – because even coding wizards need a magic wand! 🧙\n\n"
         "#############################################################################################################################################\n"
         "# Your Django development journey is about to get as smooth as a salsa dancer on roller skates!                                             \n"
         "# Developed by: Abhishek Choudhury (Got so annoyed, decided to create his own helper library, but cool enough to share it with you! 😎)    \n"

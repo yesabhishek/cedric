@@ -3,12 +3,12 @@ requires = ["pdm-backend"]
 build-backend = "pdm.backend"
 
 [project]
-name = "gecko"
+name = "cedric"
 version = "0.0.4"
 authors = [
   { name="Abhishek Choudhury", email="choudhuryabhishek76@gmail.com" },
 ]
-description = "Gecko is a Python library designed to streamline the process of setting up a Django application."
+description = "Cedric is a Python library designed to streamline the process of setting up a Django application."
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
@@ -18,5 +18,5 @@ classifiers = [
 ]
 
 [project.urls]
-"Homepage" = "https://github.com/pypa/gecko"
-"Bug Tracker" = "https://github.com/pypa/gecko/issues"
+"Homepage" = "https://github.com/pypa/cedric"
+"Bug Tracker" = "https://github.com/pypa/cedric/issues"
