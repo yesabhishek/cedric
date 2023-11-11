@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="yesabhishek",
+    name="gecko_yesabhishek",
     version="0.0.1",
     author="Abhishek Choudhury",
     author_email="choudhuryabhishek76@gmail.com",

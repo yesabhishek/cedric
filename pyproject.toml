@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gecko_yesabhishek"
+version = "0.0.1"
+authors = [
+  { name="Abhishek Choudhury", email="choudhuryabhishek76@gmail.com" },
+]
+description = "Gecko is a Python library designed to streamline the process of setting up a Django application."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pypa/gecko"
+"Bug Tracker" = "https://github.com/pypa/gecko/issues"
