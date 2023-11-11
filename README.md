@@ -1,4 +1,4 @@
-# 🦎Gecko - Django App Configuration Made Easy
+# 🦎Cedric - Django App Configuration Made Easy
 
 ## Overview
 
