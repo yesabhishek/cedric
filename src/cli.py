@@ -5,9 +5,9 @@ import inquirer
 import re
 from art import *
 from pathlib import Path
+from utils import *
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 def configure_django_app(app_name, use_docker, use_drf, use_jwt, database):
@@ -26,6 +26,11 @@ def configure_django_app(app_name, use_docker, use_drf, use_jwt, database):
 
     with open(settings_path, "r") as settings_file:
         content = settings_file.read()
+
+    if use_drf == "Yes (Recommended)":
+        create_django_app(app_name)
+        return True
+
 
     if database == "Sqlite3":
         return True

@@ -62,4 +62,4 @@ This project is licensed under the GNU License - see the [LICENSE](LICENSE) file
 
 ---
 
-Happy coding with Cedric! 🦎✨
+Happy coding with Cedric!
