@@ -2,15 +2,20 @@ import argparse
 import os
 from shutil import copytree, rmtree
 import inquirer
+import re
 from art import *
+from pathlib import Path
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-def configure_django_app(app_name, use_docker, cloud_provider, css_framework, database):
+def configure_django_app(app_name, use_docker, use_drf, use_jwt, database):
     print(f"Configuring Django app with the following options:")
     print(f"App Name: {app_name}")
     print(f"Use Docker: {use_docker}")
-    print(f"Cloud Provider: {cloud_provider}")
-    print(f"CSS Framework: {css_framework}")
+    print(f"Use DRF: {use_drf}")
+    print(f"Use JWT: {use_jwt}")
     print(f"Database: {database}")
 
     # Create a new Django project
@@ -18,22 +23,57 @@ def configure_django_app(app_name, use_docker, cloud_provider, css_framework, da
 
     # Modify settings.py based on user choices
     settings_path = os.path.join(app_name, app_name, "settings.py")
-    with open(settings_path, "a") as settings_file:
-        settings_file.write(f"\n# Custom Configuration\n")
-        settings_file.write(f"USE_DOCKER = {use_docker}\n")
-        settings_file.write(f"CLOUD_PROVIDER = '{cloud_provider}'\n")
-        settings_file.write(f"CSS_FRAMEWORK = '{css_framework}'\n")
-        settings_file.write(f"DATABASE_ENGINE = '{database.lower()}'\n")
+
+    with open(settings_path, "r") as settings_file:
+        content = settings_file.read()
+
+    if database == "Sqlite3":
+        return True
+
+    elif database == "Postgres":
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': app_name,
+                'USER': app_name,
+                'PASSWORD': '123cls4',
+                'HOST': 'localhost',
+                'PORT': '5432',
+            }
+        }
+
+    else:
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.mysql',
+                'NAME': app_name,
+                'USER': app_name,
+                'PASSWORD': '1234',
+                'HOST': 'localhost',
+                'PORT': '3306',
+            }
+        }
+
+    # Use regular expressions to find and replace the DATABASES block
+    pattern = re.compile(r'DATABASES\s*=\s*{[^}]+}\s*}', re.DOTALL)
+    content = pattern.sub(f"DATABASES = {DATABASES}", content)
+
+    with open(settings_path, "w") as settings_file:
+        settings_file.write(content)
+
 
 
 def main():
-    tprint("GECKO", font="rnd-large")
+    Art=text2art("GECKO")
+    print(Art)
     print(
         "🚀 Welcome to GECKO Django Template – because even coding wizards need a magic wand! 🧙\n\n"
-        "Your Django development journey is about to get as smooth as a salsa dancer on roller skates!\n\n"
-        "Developed by: Abhishek Choudhury (Annoyed enough to create his own helper library, but cool enough to share it with you! 😎)\n\n"
-        "Get ready to soar through your coding adventure with a sprinkle of Python magic!\n\n"
-        "Remember, bugs are just undocumented features waiting to be discovered! 🐞✨\n\n"
+        "#############################################################################################################################################\n"
+        "# Your Django development journey is about to get as smooth as a salsa dancer on roller skates!                                             \n"
+        "# Developed by: Abhishek Choudhury (Got so annoyed, decided to create his own helper library, but cool enough to share it with you! 😎)    \n"
+        "# Get ready to soar through your coding adventure with a sprinkle of Python magic!\n#\n"
+        "# Remember, bugs are just undocumented features waiting to be discovered! 🐞✨\n"
+        "#############################################################################################################################################\n\n"
     )
 
     questions = [
@@ -42,27 +82,27 @@ def main():
         ),
         inquirer.List(
             "use_docker",
-            message="Are you ready to embark on a Docker adventure?",
-            choices=["Yes, lets set sail!", "No, I prefer to stay on land."],
-            default="Yes, lets set sail!",
+            message="Are you ready to embark on a 🚢 Docker adventure?",
+            choices=["Yes", "No"],
+            default="Yes",
         ),
         inquirer.List(
-            "cloud_provider",
-            message="Pick a cloud, any cloud! (Or none)",
-            choices=["AWS", "GCP", "Azure", "Linode", "None"],
-            default="AWS",
+            "use_drf",
+            message="Shall we add Django DRF based APIs for authentication?\n (Note: This action will create a new app authentication in the django app, with a custom user model along with required fields like email, name, password)",
+            choices=["Yes (Recommended)", "No"],
+            default="Yes (Recommended)",
         ),
         inquirer.List(
-            "css_framework",
-            message="Choose your style: Fashionable, Bootstraped, or None at all?",
-            choices=["TailwindCSS", "Bootstrap", "None"],
-            default="TailwindCSS",
+            "use_jwt",
+            message="Shall we add JWT based authentication?",
+            choices=["Yes (Recommended)", "No"],
+            default="Yes (Recommended)",
         ),
         inquirer.List(
             "database",
             message="Select a Database for your coding kingdom",
             choices=["Postgres", "MySQL", "Sqlite3"],
-            default="Sqlite3",
+            default="Postgres",
         ),
     ]
 
@@ -93,8 +133,8 @@ def main():
     configure_django_app(
         app_name,
         answers["use_docker"],
-        answers["cloud_provider"],
-        answers["css_framework"],
+        answers["use_drf"],
+        answers["use_jwt"],
         answers["database"],
     )
 
