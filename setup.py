@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
-    name="gecko_yesabhishek",
-    version="0.0.1",
+    name="gecko",
+    version="0.0.4",
     author="Abhishek Choudhury",
     author_email="choudhuryabhishek76@gmail.com",
     description="Gecko is a Python library designed to streamline the process of setting up a Django application. ",
@@ -19,4 +19,9 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
+    entry_points={
+        'console_scripts': [
+            'gecko=src.cli:main'
+        ]
+    },
 )

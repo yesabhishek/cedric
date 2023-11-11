@@ -1,10 +1,10 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
 
 [project]
-name = "gecko_yesabhishek"
-version = "0.0.1"
+name = "gecko"
+version = "0.0.4"
 authors = [
   { name="Abhishek Choudhury", email="choudhuryabhishek76@gmail.com" },
 ]
