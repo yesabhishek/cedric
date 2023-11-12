@@ -10,12 +10,10 @@ from utils import *
 
 
 
-def configure_django_app(app_name, use_docker, use_drf, use_jwt, database):
+def configure_django_app(app_name, use_drf, database):
     print(f"Configuring Django app with the following options:")
     print(f"App Name: {app_name}")
-    print(f"Use Docker: {use_docker}")
     print(f"Use DRF: {use_drf}")
-    print(f"Use JWT: {use_jwt}")
     print(f"Database: {database}")
 
     # Create a new Django project
@@ -85,24 +83,24 @@ def main():
         inquirer.Text(
             "app_name", message="What shall we call your magical application?"
         ),
-        inquirer.List(
-            "use_docker",
-            message="Are you ready to embark on a 🚢 Docker adventure?",
-            choices=["Yes", "No"],
-            default="Yes",
-        ),
+        #inquirer.List(
+        #    "use_docker",
+        #    message="Are you ready to embark on a 🚢 Docker adventure?",
+        #    choices=["Yes", "No"],
+        #    default="Yes",
+        #),
         inquirer.List(
             "use_drf",
-            message="Shall we add Django DRF based APIs for authentication?\n (Note: This action will create a new app authentication in the django app, with a custom user model along with required fields like email, name, password)",
+            message="Shall we add Django DRF with JWT based APIs for authentication?\n (Note: This action will create a new app authentication in the django app, with a custom user model along with required fields like email, name, password)",
             choices=["Yes (Recommended)", "No"],
             default="Yes (Recommended)",
         ),
-        inquirer.List(
-            "use_jwt",
-            message="Shall we add JWT based authentication?",
-            choices=["Yes (Recommended)", "No"],
-            default="Yes (Recommended)",
-        ),
+        #inquirer.List(
+        #    "use_jwt",
+        #    message="Shall we add JWT based authentication?",
+        #    choices=["Yes (Recommended)", "No"],
+        #    default="Yes (Recommended)",
+        #),
         inquirer.List(
             "database",
             message="Select a Database for your coding kingdom",
@@ -134,12 +132,9 @@ def main():
         else:
             rmtree(app_directory)
 
-    # Configure Django app
     configure_django_app(
         app_name,
-        answers["use_docker"],
         answers["use_drf"],
-        answers["use_jwt"],
         answers["database"],
     )
 
