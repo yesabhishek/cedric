@@ -14,7 +14,7 @@ def configure_django_app(app_name, use_drf, database):
     print(f"Configuring Django app with the following options:")
     print(f"App Name: {app_name}")
     print(f"Use DRF: {use_drf}")
-    print(f"Database: {database}")
+    print(f"Database: {database}\n\n")
 
     # Create a new Django project
     os.system(f"django-admin startproject {app_name}")
@@ -45,7 +45,7 @@ def configure_django_app(app_name, use_drf, database):
             }
         }
 
-    else:
+    elif database == "MySQL":
         DATABASES = {
             'default': {
                 'ENGINE': 'django.db.backends.mysql',
@@ -105,7 +105,7 @@ def main():
             "database",
             message="Select a Database for your coding kingdom",
             choices=["Postgres", "MySQL", "Sqlite3"],
-            default="Postgres",
+            default="Sqlite3",
         ),
     ]
 
