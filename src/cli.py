@@ -5,7 +5,7 @@ import inquirer
 import re
 from art import *
 from pathlib import Path
-from utils import *
+from src import utils
 
 
 
@@ -26,7 +26,7 @@ def configure_django_app(app_name, use_drf, database):
         content = settings_file.read()
 
     if use_drf == "Yes (Recommended)":
-        create_django_app(app_name)
+        utils.create_django_app(app_name)
         return True
 
 

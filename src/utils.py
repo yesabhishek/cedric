@@ -73,8 +73,7 @@ def create_django_app(app_name):
     # Update requirements.txt
     subprocess.run(["pip", "freeze", ">", "requirements.txt"], shell=True, check=True)
 
-    current_directory = os.getcwd()
-    parent_directory = os.path.join(current_directory, os.pardir)
+    parent_directory = os.path.abspath(os.path.dirname(__file__))
     api_folder_path = os.path.join(app_path, "authentication", "api")
     os.makedirs(api_folder_path)
 
@@ -90,7 +89,7 @@ def create_django_app(app_name):
 
     # serializers.py
     with open(
-        os.path.join(parent_directory, "authentication", "api", "serializers.py"), "r"
+        os.path.join(parent_directory, "authentication","serializers.py"), "r"
     ) as serializers_file:
         serializers_file_content = serializers_file.read()
         with open(
@@ -100,7 +99,7 @@ def create_django_app(app_name):
 
     # views.py
     with open(
-        os.path.join(parent_directory, "authentication", "api", "views.py"), "r"
+        os.path.join(parent_directory, "authentication",  "views.py"), "r"
     ) as views_file:
         views_file_content = views_file.read()
         with open(os.path.join(api_folder_path, "views.py"), "a+") as new_views_file:
