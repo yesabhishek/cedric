@@ -5,7 +5,7 @@ import time
 import shutil
 
 
-def create_django_app(app_name):
+def create_django_app(app_name, database):
     # Use os.path.join to join paths in a platform-independent way
     app_path = os.path.join(os.getcwd(), app_name)
     venv_path = os.path.join(app_path, "venv")
@@ -115,6 +115,6 @@ def create_django_app(app_name):
         ) as new_urls_file:
             new_urls_file.write(urls_file_content)
 
-    subprocess.run(["python", "manage.py", "makemigrations", "--noinput"], check=True)
-
-    subprocess.run(["python", "manage.py", "migrate"], shell=True, check=True)
+    if database == "Sqlite3":
+        subprocess.run(["python", "manage.py", "makemigrations", "--noinput"], check=True)
+        subprocess.run(["python", "manage.py", "migrate"], shell=True, check=True)

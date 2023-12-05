@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="cedric",
-    version="1.0.30",
+    version="1.0.32",
     author="Abhishek Choudhury",
     author_email="choudhuryabhishek76@gmail.com",
     description="Cedric is a Python library designed to streamline the process of setting up a Django application. ",

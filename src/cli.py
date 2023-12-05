@@ -26,7 +26,7 @@ def configure_django_app(app_name, use_drf, database):
         content = settings_file.read()
 
     if use_drf == "Yes (Recommended)":
-        utils.create_django_app(app_name)
+        utils.create_django_app(app_name, database)
         return True
 
 
