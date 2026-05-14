@@ -1,65 +1,228 @@
-# Cedric - Django App Configuration Made Easy
+# Cedric
 
-## Overview
+Cedric is a command line tool for creating clean Python backend projects for
+Django, FastAPI, and Flask. It generates a professional project structure with
+database configuration, JWT authentication endpoints, OpenAPI documentation,
+Docker files, CI, tests, and agent-ready project metadata.
 
-Cedric is a Python library designed to streamline the process of setting up a Django application. This library aims to save development time and simplify the configuration of a full-fledged Django project. By taking a few inputs from the user, Cedric automates the creation and configuration of a Django application, allowing developers to focus on building great features rather than spending time on the initial setup.
+Cedric is designed for two workflows:
+
+- Human developers who want a consistent project foundation without repetitive setup.
+- AI coding agents that need explicit conventions, safe edit boundaries, and
+  machine-readable project metadata.
+
+## Status
+
+Cedric v2 is a full rewrite of the original Django-only scaffolder. The new CLI
+uses `cedric` as the primary command and keeps `cedric-setup` only as a
+deprecated compatibility entry point.
 
 ## Features
 
-- **Interactive CLI:** Cedric provides an interactive command-line interface (CLI) that guides users through the configuration process with a series of well-defined questions.
+- Generate Django, FastAPI, or Flask projects from one CLI.
+- Choose SQLite, Turso/libSQL, local Postgres, Neon Postgres, or AWS RDS Postgres.
+- Create a `uv`-based Python project with `pyproject.toml` and a starter lockfile.
+- Include JWT auth scaffolding with register, login, refresh, logout, me, and
+  password reset endpoints.
+- Include OpenAPI documentation suited to each framework.
+- Generate Docker, Docker Compose, GitHub Actions CI, tests, scripts, and docs.
+- Write `.cedric/project.json` so Cedric and AI agents can understand the project.
+- Provide lifecycle commands for refreshing DB, auth, Docker, and CI files.
 
-- **Default Choices:** Cedric comes with sensible default choices for various configuration options, making the setup process quick and straightforward. Users can customize their choices based on project requirements.
+## Requirements
 
-- **Docker Integration:** Cedric supports the use of Docker, allowing developers to choose whether to include Docker in their project setup. The default choice is set to use Docker for enhanced development and deployment consistency.
+- Python 3.10 or newer.
+- `pipx`, `pip`, or another Python package installer.
+- `uv` is recommended for working inside generated projects.
 
-- **Cloud Provider Options:** Users can select their preferred cloud provider from a list of popular choices, including AWS, GCP, Azure, Linode, or none if the application is not hosted on a specific cloud provider.
+## Installation
 
-- **CSS Framework Selection:** Cedric includes options for selecting a CSS framework. TailwindCSS is set as the default choice, but users can opt for Bootstrap or choose not to include any CSS framework in their project.
-
-- **Database Configuration:** Developers can choose their preferred database from a list that includes Postgres, MySQL, and Sqlite3. Sqlite3 is set as the default choice for simplicity, but users can easily select an alternative option.
-
-## Getting Started
-
-### Installation
-
-To use Cedric, install the library using the following command:
+Install the published package:
 
 ```bash
 pip install cedric
 ```
 
-### Usage
-
-1. Open your terminal and navigate to the desired directory where you want to create your Django project.
-
-2. Run the following command to start the Cedric setup:
+For isolated CLI usage:
 
 ```bash
-cedric-setup
+pipx install cedric
 ```
 
-3. Answer the prompted questions to configure your Django application based on your preferences.
-
-4. Once the setup is complete, Cedric will create and configure your Django project according to the provided choices.
-
-## Example
-
-Here's an example of how Cedric can be used:
+For local development on Cedric itself:
 
 ```bash
-cedric-setup
+git clone https://github.com/yesabhishek/cedric.git
+cd cedric
+uv sync --extra dev
+uv run cedric --help
 ```
 
-Follow the interactive prompts to provide information about your application, such as the application name, whether to use Docker, your preferred cloud provider, CSS framework, and database.
+## Quick Start
 
-## Contributing
+Create a FastAPI project with local SQLite:
 
-Contributions are welcome! If you encounter issues or have suggestions for improvements, please open an issue or submit a pull request on the [Cedric GitHub repository](https://github.com/yesabhishek/cedric).
+```bash
+cedric new my_api --framework fastapi --database sqlite --no-input
+cd my_api
+uv sync
+cp .env.example .env
+./scripts/dev.sh
+```
+
+Create a Django project backed by local Postgres:
+
+```bash
+cedric new my_service --framework django --database postgres-local --no-input
+cd my_service
+uv sync
+cp .env.example .env
+docker compose up
+```
+
+Create a Flask project configured for Neon:
+
+```bash
+cedric new my_gateway --framework flask --database neon --no-input
+```
+
+## CLI Reference
+
+Create a project:
+
+```bash
+cedric new <name> --framework <django|fastapi|flask> --database <preset>
+```
+
+Useful options:
+
+- `--target-dir <path>` writes the project into another directory.
+- `--force` replaces an existing project directory.
+- `--no-input` disables prompts for scripts and AI agents.
+
+Manage a generated project:
+
+```bash
+cedric doctor .
+cedric add db --database neon
+cedric add auth
+cedric add docker
+cedric add ci
+cedric templates list
+```
+
+## Supported Templates
+
+Frameworks:
+
+- `django`
+- `fastapi`
+- `flask`
+
+Database presets:
+
+- `sqlite`: local file-backed SQLite.
+- `turso`: Turso/libSQL SQLite-compatible hosted database.
+- `postgres-local`: local Postgres with Docker Compose support.
+- `neon`: Neon hosted Postgres.
+- `aws-rds`: AWS RDS Postgres.
+
+Auth module:
+
+- `jwt`: email and password JWT authentication.
+
+## Generated Project Layout
+
+Cedric projects include:
+
+```text
+.
+|-- .cedric/project.json
+|-- .env.example
+|-- AGENTS.md
+|-- Dockerfile
+|-- README.md
+|-- app/
+|-- config/
+|-- docker-compose.yml
+|-- docs/
+|-- migrations/
+|-- pyproject.toml
+|-- scripts/
+|-- tests/
+`-- uv.lock
+```
+
+Framework-specific files are generated where appropriate. Django projects also
+include `manage.py` and an `authentication/` app.
+
+## Authentication API
+
+The default auth module documents and scaffolds these endpoints:
+
+| Method | Path | Purpose |
+| --- | --- | --- |
+| `POST` | `/auth/register` | Create an account |
+| `POST` | `/auth/login` | Return access and refresh tokens |
+| `POST` | `/auth/refresh` | Refresh tokens |
+| `POST` | `/auth/logout` | Logout hook |
+| `GET` | `/auth/me` | Return the current user |
+| `POST` | `/auth/password-reset` | Password reset integration stub |
+
+The generated auth code is a solid starting point, not a complete identity
+platform. Replace in-memory examples with durable user storage before production.
+
+## OpenAPI Support
+
+- FastAPI projects use native OpenAPI at `/openapi.json`.
+- Django projects use Django REST Framework with drf-spectacular at `/api/schema/`.
+- Flask projects use flask-smorest at `/openapi.json`.
+
+Each project also includes `docs/openapi.yaml` as a concise contract reference
+for the generated auth surface.
+
+## Working With AI Agents
+
+Every generated project includes:
+
+- `AGENTS.md` with commands, architecture notes, and edit boundaries.
+- `.cedric/project.json` with framework, database, auth, template version, and
+  enabled module metadata.
+- Docs that describe auth, database configuration, and OpenAPI expectations.
+
+Use `cedric doctor .` before and after large automated edits to confirm that the
+project still matches Cedric expectations.
+
+## Development
+
+Run checks for Cedric itself:
+
+```bash
+uv sync --extra dev
+uv run pytest
+uv run ruff check .
+uv build
+```
+
+The test suite covers project spec validation, CLI commands, generated file
+trees, database switching, and `doctor` failure modes.
+
+## Releases
+
+Releases are published through GitHub Releases and then to production PyPI after
+approval in the protected `pypi` GitHub environment. See `RELEASE.md` for the
+full branch, pull request, sanity check, tag, and release workflow.
+
+## Compatibility
+
+The old `cedric-setup` command is deprecated. Use:
+
+```bash
+cedric new <name>
+```
+
+The v1 Django-only `src` package has been replaced by the v2 `cedric` package.
 
 ## License
 
-This project is licensed under the GNU License - see the [LICENSE](LICENSE) file for details.
-
----
-
-Happy coding with Cedric!
+Cedric is distributed under the GPL-3.0-only license. See `LICENSE` for details.

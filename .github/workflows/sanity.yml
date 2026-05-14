@@ -1,0 +1,124 @@
+name: Sanity
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  documentation:
+    name: Documentation hygiene
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check release documentation style
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          ignored = {".git", ".ruff_cache", ".pytest_cache", "__pycache__", "dist", "build"}
+          violations = []
+          for path in Path(".").rglob("*"):
+              if not path.is_file() or any(part in ignored for part in path.parts):
+                  continue
+              text = path.read_text(encoding="utf-8", errors="ignore")
+              for number, line in enumerate(text.splitlines(), 1):
+                  if "\u2014" in line or "\u2013" in line:
+                      violations.append(f"{path}:{number}: contains dash punctuation")
+                  if any(ord(char) > 127 for char in line):
+                      violations.append(f"{path}:{number}: contains non-ASCII text")
+
+          if violations:
+              print("\n".join(violations))
+              raise SystemExit(1)
+          PY
+
+  checks:
+    name: Python ${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version:
+          - "3.10"
+          - "3.11"
+          - "3.12"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Lint
+        run: uv run ruff check .
+
+      - name: Test
+        run: uv run pytest
+
+      - name: Build package
+        run: uv build
+
+  generated-projects:
+    name: Generated project smoke tests
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - framework: fastapi
+            database: sqlite
+          - framework: django
+            database: postgres-local
+          - framework: flask
+            database: neon
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: uv sync --extra dev
+
+      - name: Generate project
+        run: |
+          mkdir -p /tmp/cedric-smoke
+          uv run cedric new sample_${{ matrix.framework }} \
+            --framework ${{ matrix.framework }} \
+            --database ${{ matrix.database }} \
+            --target-dir /tmp/cedric-smoke \
+            --no-input
+
+      - name: Validate generated project
+        run: uv run cedric doctor /tmp/cedric-smoke/sample_${{ matrix.framework }}
+
+      - name: Check generated docs
+        run: |
+          test -f /tmp/cedric-smoke/sample_${{ matrix.framework }}/README.md
+          test -f /tmp/cedric-smoke/sample_${{ matrix.framework }}/AGENTS.md
+          test -f /tmp/cedric-smoke/sample_${{ matrix.framework }}/docs/openapi.yaml
