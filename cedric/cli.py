@@ -18,6 +18,7 @@ app = typer.Typer(
     name="cedric",
     help="Generate and manage clean Python backend projects.",
     no_args_is_help=True,
+    invoke_without_command=True,
     add_completion=False,
 )
 add_app = typer.Typer(help="Add or refresh Cedric-managed modules.", no_args_is_help=True)

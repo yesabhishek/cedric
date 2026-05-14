@@ -104,10 +104,11 @@ Prefer tag-based releases for normal publishing.
 
 ## 7. Verify PyPI
 
-After the `publish-pypi` job succeeds:
+After the `publish-pypi` job succeeds, replace the version with the released
+version:
 
 ```bash
-python -m pip install --upgrade cedric==2.0.0
+python -m pip install --upgrade cedric==2.0.1
 cedric --version
 cedric templates list
 ```

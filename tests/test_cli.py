@@ -13,6 +13,13 @@ def test_templates_list_command():
     assert "postgres-local" in result.output
 
 
+def test_version_command():
+    result = runner.invoke(app, ["--version"])
+
+    assert result.exit_code == 0
+    assert "Cedric 2.0.1" in result.output
+
+
 def test_new_and_doctor_commands(tmp_path):
     result = runner.invoke(
         app,

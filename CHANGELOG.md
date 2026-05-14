@@ -2,6 +2,12 @@
 
 All notable changes to Cedric are documented here.
 
+## 2.0.1
+
+### Fixed
+
+- Fixed `cedric --version` so it prints the CLI version without requiring a subcommand.
+
 ## 2.0.0
 
 ### Added
