@@ -1,52 +1,83 @@
 # Cedric
 
-Cedric is a command line tool for creating clean Python backend projects for
-Django, FastAPI, and Flask. It generates a professional project structure with
-database configuration, JWT authentication endpoints, OpenAPI documentation,
-Docker files, CI, tests, and agent-ready project metadata.
+Cedric is a command line tool for generating clean Python backend projects for
+Django, FastAPI, and Flask. It creates a working project structure with database
+configuration, JWT authentication endpoints, OpenAPI documentation, Docker files,
+CI, tests, development scripts, and metadata that is useful for both developers
+and coding agents.
 
-Cedric is designed for two workflows:
+Cedric is built for two common workflows:
 
-- Human developers who want a consistent project foundation without repetitive setup.
-- AI coding agents that need explicit conventions, safe edit boundaries, and
-  machine-readable project metadata.
+- Human developers who want a consistent backend starting point without repeating setup work.
+- AI coding agents that need explicit project conventions, commands, and edit boundaries.
 
-## Status
+## Table Of Contents
 
-Cedric v2 is a full rewrite of the original Django-only scaffolder. The new CLI
-uses `cedric` as the primary command and keeps `cedric-setup` only as a
-deprecated compatibility entry point.
+- [What Cedric Generates](#what-cedric-generates)
+- [Requirements](#requirements)
+- [Install Cedric](#install-cedric)
+- [Create A Project](#create-a-project)
+- [Run Generated Apps Locally](#run-generated-apps-locally)
+- [CLI Reference](#cli-reference)
+- [Template Options](#template-options)
+- [Generated Project Layout](#generated-project-layout)
+- [Authentication](#authentication)
+- [OpenAPI](#openapi)
+- [Agent Metadata](#agent-metadata)
+- [Developing Cedric](#developing-cedric)
+- [Release Workflow](#release-workflow)
+- [Troubleshooting](#troubleshooting)
+- [Compatibility](#compatibility)
 
-## Features
+## What Cedric Generates
 
-- Generate Django, FastAPI, or Flask projects from one CLI.
-- Choose SQLite, Turso/libSQL, local Postgres, Neon Postgres, or AWS RDS Postgres.
-- Create a `uv`-based Python project with `pyproject.toml` and a starter lockfile.
-- Include JWT auth scaffolding with register, login, refresh, logout, me, and
-  password reset endpoints.
-- Include OpenAPI documentation suited to each framework.
-- Generate Docker, Docker Compose, GitHub Actions CI, tests, scripts, and docs.
-- Write `.cedric/project.json` so Cedric and AI agents can understand the project.
-- Provide lifecycle commands for refreshing DB, auth, Docker, and CI files.
+Each generated project is intended to run immediately after dependency
+installation. Cedric currently generates:
+
+- A Django, FastAPI, or Flask backend.
+- A `pyproject.toml` managed with `uv`.
+- Database configuration for SQLite, Turso/libSQL, local Postgres, Neon, or AWS RDS.
+- JWT authentication endpoints for account creation, login, refresh, logout, current user, and password reset stub.
+- OpenAPI documentation in the native style of the selected framework.
+- Dockerfile, Docker Compose, GitHub Actions CI, tests, docs, and local development scripts.
+- `.cedric/project.json` metadata that records the selected framework, database, auth module, audience, package name, and enabled modules.
+- `AGENTS.md` so coding agents have a clear project contract.
+
+Cedric v2 is a rewrite of the older Django-only scaffolder. The active CLI
+entrypoint is `cedric init`.
 
 ## Requirements
 
 - Python 3.10 or newer.
-- `pipx`, `pip`, or another Python package installer.
-- `uv` is recommended for working inside generated projects.
+- `pip`, `pipx`, or another Python package installer.
+- `uv` for working inside generated projects.
+- Docker if you plan to use generated Docker Compose files.
 
-## Installation
-
-Install the published package:
+Install `uv` from the official project if it is not already available:
 
 ```bash
-pip install cedric
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+## Install Cedric
+
+Install the latest published package:
+
+```bash
+pip install --upgrade cedric
 ```
 
 For isolated CLI usage:
 
 ```bash
 pipx install cedric
+```
+
+Confirm the installed version:
+
+```bash
+cedric --version
+cedric --help
 ```
 
 For local development on Cedric itself:
@@ -58,9 +89,58 @@ uv sync --extra dev
 uv run cedric --help
 ```
 
-## Run Locally By Framework
+## Create A Project
 
-FastAPI:
+Use the guided wizard:
+
+```bash
+cedric init
+```
+
+Use non-interactive flags for scripts or repeatable setup:
+
+```bash
+cedric init --name my_api --framework fastapi --database sqlite --no-input
+```
+
+Create a project in another directory:
+
+```bash
+cedric init \
+  --name my_service \
+  --framework django \
+  --database postgres-local \
+  --target-dir ~/projects \
+  --no-input
+```
+
+Replace an existing generated directory:
+
+```bash
+cedric init --name my_api --framework fastapi --database sqlite --force --no-input
+```
+
+Choose generated README guidance:
+
+```bash
+cedric init --name agent_api --audience ai-agent --no-input
+```
+
+Supported audience values are:
+
+- `human-developer`: concise day-1 workflow for people.
+- `ai-agent`: deterministic command order and agent workflow notes.
+- `dual`: includes both human and agent guidance.
+
+## Run Generated Apps Locally
+
+The generated `./scripts/dev.sh` command is the preferred local run path. The
+direct framework commands below are useful when you want to run the server
+manually or customize host and port flags.
+
+### FastAPI
+
+Create and run:
 
 ```bash
 cedric init --name my_api --framework fastapi --database sqlite --no-input
@@ -70,15 +150,20 @@ cp .env.example .env
 ./scripts/dev.sh
 ```
 
-Manual FastAPI run command:
+Manual run command:
 
 ```bash
 uv run uvicorn app.main:app --reload
 ```
 
-Open Swagger UI at `/docs` or the schema at `/openapi.json`.
+Open:
 
-Django:
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
+
+### Django
+
+Create and run:
 
 ```bash
 cedric init --name my_service --framework django --database sqlite --no-input
@@ -89,15 +174,20 @@ uv run python manage.py migrate
 ./scripts/dev.sh
 ```
 
-Manual Django run command:
+Manual run command:
 
 ```bash
 uv run python manage.py runserver
 ```
 
-Open the app at `/` and the schema at `/api/schema/`.
+Open:
 
-Flask:
+- App: `http://127.0.0.1:8000/`
+- Schema: `http://127.0.0.1:8000/api/schema/`
+
+### Flask
+
+Create and run:
 
 ```bash
 cedric init --name my_gateway --framework flask --database sqlite --no-input
@@ -107,62 +197,78 @@ cp .env.example .env
 ./scripts/dev.sh
 ```
 
-Manual Flask run command:
+Manual run command:
 
 ```bash
 uv run flask --app app run --debug
 ```
 
-Open the schema at `/openapi.json`.
+Open:
+
+- OpenAPI JSON: `http://127.0.0.1:8000/openapi.json`
 
 ## CLI Reference
 
-Create a project:
+Primary command:
 
 ```bash
-cedric init --name <name> --framework <django|fastapi|flask> --database <preset>
+cedric init [OPTIONS]
 ```
 
-Useful options:
+Options:
 
-- `--target-dir <path>` writes the project into another directory.
-- `--force` replaces an existing project directory.
-- `--no-input` disables prompts for scripts and AI agents.
-- `--audience <human-developer|ai-agent|dual>` selects README guidance style.
+| Option | Purpose |
+| --- | --- |
+| `--name <name>` | Project directory name. Must start with a letter and use only letters, numbers, underscores, or hyphens. |
+| `--framework <django|fastapi|flask>` | Framework template to generate. |
+| `--database <sqlite|turso|postgres-local|neon|aws-rds>` | Database preset. |
+| `--audience <human-developer|ai-agent|dual>` | Controls generated README workflow sections. |
+| `--target-dir <path>` | Parent directory where the project should be created. |
+| `--force` | Replace an existing project directory. |
+| `--no-input` | Use provided values or recommended defaults without prompts. |
+| `--help` | Show command help. |
 
-Start the guided wizard:
+Default non-interactive values:
 
-```bash
-cedric init
-```
+| Field | Default |
+| --- | --- |
+| Name | `my_api` |
+| Framework | `fastapi` |
+| Database | `sqlite` |
+| Audience | `human-developer` |
 
-## Supported Templates
+Legacy commands such as `cedric new`, `cedric doctor`, `cedric add`, and
+`cedric templates` are intentionally removed. They return migration guidance
+instead of mutating projects.
 
-Frameworks:
+## Template Options
 
-- `django`
-- `fastapi`
-- `flask`
+### Frameworks
 
-Database presets:
+| Framework | Generated entrypoint | Local server command |
+| --- | --- | --- |
+| `fastapi` | `app/main.py` | `uv run uvicorn app.main:app --reload` |
+| `django` | `manage.py` | `uv run python manage.py runserver` |
+| `flask` | `wsgi.py` | `uv run flask --app app run --debug` |
 
-- `sqlite`: local file-backed SQLite.
-- `turso`: Turso/libSQL SQLite-compatible hosted database.
-- `postgres-local`: local Postgres with Docker Compose support.
-- `neon`: Neon hosted Postgres.
-- `aws-rds`: AWS RDS Postgres.
+### Database Presets
 
-Auth module:
-
-- `jwt`: email and password JWT authentication.
+| Preset | Default URL | Notes |
+| --- | --- | --- |
+| `sqlite` | `sqlite:///./data/app.db` | Zero-config local file storage. |
+| `turso` | `libsql://your-database.turso.io` | SQLite-compatible hosted database. Requires `TURSO_AUTH_TOKEN`. |
+| `postgres-local` | `postgresql+psycopg://app:app@localhost:5432/app` | Local Postgres wired to Docker Compose. |
+| `neon` | `postgresql+psycopg://user:password@ep-example.neon.tech/app?sslmode=require` | Serverless Postgres. Replace with your Neon pooled URL. |
+| `aws-rds` | `postgresql+psycopg://user:password@your-rds-endpoint.amazonaws.com:5432/app` | Managed Postgres. Use SSL and deployment secrets. |
 
 ## Generated Project Layout
 
-Cedric projects include:
+Typical generated project:
 
 ```text
 .
-|-- .cedric/project.json
+|-- .cedric/
+|   `-- project.json
 |-- .env.example
 |-- AGENTS.md
 |-- Dockerfile
@@ -171,81 +277,146 @@ Cedric projects include:
 |-- config/
 |-- docker-compose.yml
 |-- docs/
+|   |-- auth.md
+|   |-- database.md
+|   |-- deployment.md
+|   |-- development.md
+|   `-- openapi.yaml
 |-- migrations/
 |-- pyproject.toml
 |-- scripts/
+|   `-- dev.sh
 `-- tests/
 ```
 
-Framework-specific files are generated where appropriate. Django projects also
-include `manage.py` and an `authentication/` app.
+Django projects also include `manage.py` and an `authentication/` app.
+Flask projects include `wsgi.py`.
 
-## Authentication API
+## Authentication
 
-The default auth module documents and scaffolds these endpoints:
+Cedric scaffolds the same auth surface across supported frameworks:
 
 | Method | Path | Purpose |
 | --- | --- | --- |
-| `POST` | `/auth/register` | Create an account |
-| `POST` | `/auth/login` | Return access and refresh tokens |
-| `POST` | `/auth/refresh` | Refresh tokens |
-| `POST` | `/auth/logout` | Logout hook |
-| `GET` | `/auth/me` | Return the current user |
-| `POST` | `/auth/password-reset` | Password reset integration stub |
+| `POST` | `/auth/register` | Create an account. |
+| `POST` | `/auth/login` | Return access and refresh tokens. |
+| `POST` | `/auth/refresh` | Refresh tokens. |
+| `POST` | `/auth/logout` | Logout hook. |
+| `GET` | `/auth/me` | Return the current authenticated user. |
+| `POST` | `/auth/password-reset` | Stub for a future reset flow. |
 
-The generated auth code is a solid starting point, not a complete identity
-platform. Review password reset, rate limiting, and audit requirements before production.
+FastAPI projects use direct `bcrypt` hashing and HTTP Bearer auth in Swagger.
+Users are stored in the selected database by default. Passwords longer than
+bcrypt's 72-byte limit are rejected with validation errors instead of server
+errors.
 
-## OpenAPI Support
+The generated auth is a practical starting point, not a full identity platform.
+Before production, review:
 
-- FastAPI projects use native OpenAPI at `/openapi.json`.
-- Django projects use Django REST Framework with drf-spectacular at `/api/schema/`.
-- Flask projects use flask-smorest at `/openapi.json`.
+- Rate limits for login and password reset.
+- Email delivery for password reset.
+- Secret management for JWT signing keys.
+- Audit logging and account lifecycle requirements.
 
-Each project also includes `docs/openapi.yaml` as a concise contract reference
-for the generated auth surface.
+## OpenAPI
 
-## Working With AI Agents
+Generated projects expose framework-native schema endpoints:
 
-Every generated project includes:
+| Framework | Schema endpoint | Interactive docs |
+| --- | --- | --- |
+| FastAPI | `/openapi.json` | `/docs` |
+| Django | `/api/schema/` | Depends on how you serve drf-spectacular views. |
+| Flask | `/openapi.json` | Depends on flask-smorest UI configuration. |
 
-- `AGENTS.md` with commands, architecture notes, and edit boundaries.
-- `.cedric/project.json` with framework, database, auth, template version, and
-  enabled module metadata.
-- Docs that describe auth, database configuration, and OpenAPI expectations.
+Every project also includes `docs/openapi.yaml` as a concise contract reference
+for the generated auth endpoints.
 
-Use `AGENTS.md` and `.cedric/project.json` before large automated edits to confirm
-project conventions and Cedric metadata.
+## Agent Metadata
 
-## Development
+Cedric writes files that help coding agents and humans understand the generated
+project:
 
-Run checks for Cedric itself:
+- `AGENTS.md`: commands, architecture notes, and edit boundaries.
+- `.cedric/project.json`: framework, database, auth module, audience, package name, template version, and enabled modules.
+- `docs/`: notes for auth, database setup, development, deployment, and OpenAPI behavior.
+
+Use these files before making large automated edits. They are intended to reduce
+guesswork and keep generated projects consistent.
+
+## Developing Cedric
+
+Install development dependencies:
 
 ```bash
 uv sync --extra dev
-uv run pytest
-uv run ruff check .
-uv build
 ```
 
-The test suite covers project spec validation, CLI commands, generated file
-trees, README variants, and legacy command migration messages.
+Run checks:
 
-## Releases
+```bash
+uv run ruff check .
+uv run pytest
+uv build
+uvx twine check dist/*
+```
 
-Releases are published through GitHub Releases and then to production PyPI after
-approval in the protected `pypi` GitHub environment. See `RELEASE.md` for the
-full branch, pull request, sanity check, tag, and release workflow.
+Run the local reinstall smoke workflow:
+
+```bash
+./scripts/reinstall_local_and_test.sh
+```
+
+That script builds the local package, reinstalls it with `pipx`, generates sample
+projects, and HTTP-tests generated FastAPI auth.
+
+## Release Workflow
+
+Releases are published from GitHub tags through `.github/workflows/release.yml`.
+The release workflow:
+
+1. Builds the source distribution and wheel.
+2. Runs lint, tests, and `twine check`.
+3. Creates a GitHub Release with artifacts attached.
+4. Publishes to PyPI using the protected `pypi` environment.
+
+See `RELEASE.md` for the operational release checklist.
+
+## Troubleshooting
+
+### `ModuleNotFoundError: No module named 'bcrypt'`
+
+You are probably running an older generated app or a stale virtual environment.
+Regenerate the app with the latest Cedric and sync dependencies:
+
+```bash
+pip install --upgrade cedric
+cedric init --name my_api --framework fastapi --database sqlite --force --no-input
+cd my_api
+uv sync
+uv run python -c "import bcrypt; print(bcrypt.__version__)"
+```
+
+### `cedric --version` changed but my generated app did not
+
+Cedric copies template files into generated projects. Updating Cedric does not
+rewrite existing apps. Regenerate with `--force` or manually apply the template
+change to the existing project.
+
+### My project is inside `.Trash`
+
+Move or regenerate the project outside `.Trash`. macOS may restrict access to
+files in Trash, and development tools may behave inconsistently there.
+
+### `cedric new` or `cedric doctor` no longer works
+
+Use `cedric init`. Older lifecycle commands were removed in the current CLI.
 
 ## Compatibility
 
-The old `cedric-setup` command and v2.0.1 lifecycle commands are removed. Use:
-
-```bash
-cedric init --name <name>
-```
-
-The v1 Django-only `src` package has been replaced by the v2 `cedric` package.
+- Current primary command: `cedric init`.
+- Deprecated compatibility entrypoint: `cedric-setup`, which exits with migration guidance.
+- Removed commands: `cedric new`, `cedric doctor`, `cedric add`, `cedric templates`.
+- Replaced package architecture: the old Django-only `src` package was replaced by the v2 `cedric` package.
 
 ## License
 
