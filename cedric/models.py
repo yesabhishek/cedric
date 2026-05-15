@@ -11,6 +11,7 @@ from cedric.catalog import DATABASES, FRAMEWORKS, TEMPLATE_VERSION
 Framework = Literal["django", "fastapi", "flask"]
 Database = Literal["sqlite", "turso", "postgres-local", "neon", "aws-rds"]
 Auth = Literal["jwt"]
+Audience = Literal["human-developer", "ai-agent", "dual"]
 
 
 class ProjectSpec(BaseModel):
@@ -18,6 +19,7 @@ class ProjectSpec(BaseModel):
     framework: Framework
     database: Database = "sqlite"
     auth: Auth = "jwt"
+    audience: Audience = "human-developer"
     package_name: str | None = None
     template_version: str = TEMPLATE_VERSION
     include_docker: bool = True
@@ -44,6 +46,14 @@ class ProjectSpec(BaseModel):
             raise ValueError(f"Unsupported database: {value}")
         return value
 
+    @field_validator("audience")
+    @classmethod
+    def validate_audience(cls, value: str) -> str:
+        allowed = {"human-developer", "ai-agent", "dual"}
+        if value not in allowed:
+            raise ValueError(f"Unsupported audience: {value}")
+        return value
+
     def normalized_package(self) -> str:
         raw = self.package_name or self.name
         value = re.sub(r"[^A-Za-z0-9_]", "_", raw).lower()
@@ -60,6 +70,7 @@ class ProjectSpec(BaseModel):
             "framework": self.framework,
             "database": self.database,
             "auth": self.auth,
+            "audience": self.audience,
             "package_name": self.normalized_package(),
             "template_version": self.template_version,
             "enabled_modules": {

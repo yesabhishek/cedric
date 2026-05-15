@@ -58,33 +58,62 @@ uv sync --extra dev
 uv run cedric --help
 ```
 
-## Quick Start
+## Run Locally By Framework
 
-Create a FastAPI project with local SQLite:
+FastAPI:
 
 ```bash
-cedric new my_api --framework fastapi --database sqlite --no-input
+cedric init --name my_api --framework fastapi --database sqlite --no-input
 cd my_api
 uv sync
 cp .env.example .env
 ./scripts/dev.sh
 ```
 
-Create a Django project backed by local Postgres:
+Manual FastAPI run command:
 
 ```bash
-cedric new my_service --framework django --database postgres-local --no-input
+uv run uvicorn app.main:app --reload
+```
+
+Open Swagger UI at `/docs` or the schema at `/openapi.json`.
+
+Django:
+
+```bash
+cedric init --name my_service --framework django --database sqlite --no-input
 cd my_service
 uv sync
 cp .env.example .env
-docker compose up
+uv run python manage.py migrate
+./scripts/dev.sh
 ```
 
-Create a Flask project configured for Neon:
+Manual Django run command:
 
 ```bash
-cedric new my_gateway --framework flask --database neon --no-input
+uv run python manage.py runserver
 ```
+
+Open the app at `/` and the schema at `/api/schema/`.
+
+Flask:
+
+```bash
+cedric init --name my_gateway --framework flask --database sqlite --no-input
+cd my_gateway
+uv sync
+cp .env.example .env
+./scripts/dev.sh
+```
+
+Manual Flask run command:
+
+```bash
+uv run flask --app app run --debug
+```
+
+Open the schema at `/openapi.json`.
 
 ## CLI Reference
 

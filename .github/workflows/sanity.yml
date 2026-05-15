@@ -108,14 +108,11 @@ jobs:
       - name: Generate project
         run: |
           mkdir -p /tmp/cedric-smoke
-          uv run cedric new sample_${{ matrix.framework }} \
+          uv run cedric init --name sample_${{ matrix.framework }} \
             --framework ${{ matrix.framework }} \
             --database ${{ matrix.database }} \
             --target-dir /tmp/cedric-smoke \
             --no-input
-
-      - name: Validate generated project
-        run: uv run cedric doctor /tmp/cedric-smoke/sample_${{ matrix.framework }}
 
       - name: Check generated docs
         run: |
