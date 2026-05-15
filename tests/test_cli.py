@@ -8,12 +8,13 @@ runner = CliRunner()
 
 def test_help_lists_init_only():
     result = runner.invoke(app, ["--help"])
+    normalized = " ".join(result.output.split())
 
     assert result.exit_code == 0
-    assert " init " in result.output
-    assert " doctor " not in result.output
-    assert " templates " not in result.output
-    assert " add " not in result.output
+    assert "init" in normalized
+    assert "doctor" not in normalized
+    assert "templates" not in normalized
+    assert "add" not in normalized
 
 
 def test_root_command_prints_intro_and_help():
