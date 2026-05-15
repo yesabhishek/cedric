@@ -79,8 +79,8 @@ After the pull request is merged into `main`:
 ```bash
 git checkout main
 git pull origin main
-git tag v2.0.0
-git push origin v2.0.0
+git tag v2.0.3
+git push origin v2.0.3
 ```
 
 The `Release` workflow will:
@@ -97,7 +97,7 @@ The `Release` workflow also supports manual dispatch from GitHub Actions.
 Provide the release tag, for example:
 
 ```text
-v2.0.0
+v2.0.3
 ```
 
 Prefer tag-based releases for normal publishing.
@@ -108,14 +108,14 @@ After the `publish-pypi` job succeeds, replace the version with the released
 version:
 
 ```bash
-python -m pip install --upgrade cedric==2.0.1
+python -m pip install --upgrade cedric==2.0.3
 cedric --version
-cedric templates list
+cedric --help
 ```
 
 ## Current Release Candidate
 
-- Version: `2.0.0`
+- Version: `2.0.3`
 - Primary command: `cedric`
 - Deprecated compatibility command: `cedric-setup`
 - Release mechanism: GitHub Release with generated notes and attached Python artifacts.

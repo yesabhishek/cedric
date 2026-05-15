@@ -120,7 +120,7 @@ Open the schema at `/openapi.json`.
 Create a project:
 
 ```bash
-cedric new <name> --framework <django|fastapi|flask> --database <preset>
+cedric init --name <name> --framework <django|fastapi|flask> --database <preset>
 ```
 
 Useful options:
@@ -128,16 +128,12 @@ Useful options:
 - `--target-dir <path>` writes the project into another directory.
 - `--force` replaces an existing project directory.
 - `--no-input` disables prompts for scripts and AI agents.
+- `--audience <human-developer|ai-agent|dual>` selects README guidance style.
 
-Manage a generated project:
+Start the guided wizard:
 
 ```bash
-cedric doctor .
-cedric add db --database neon
-cedric add auth
-cedric add docker
-cedric add ci
-cedric templates list
+cedric init
 ```
 
 ## Supported Templates
@@ -178,8 +174,7 @@ Cedric projects include:
 |-- migrations/
 |-- pyproject.toml
 |-- scripts/
-|-- tests/
-`-- uv.lock
+`-- tests/
 ```
 
 Framework-specific files are generated where appropriate. Django projects also
@@ -199,7 +194,7 @@ The default auth module documents and scaffolds these endpoints:
 | `POST` | `/auth/password-reset` | Password reset integration stub |
 
 The generated auth code is a solid starting point, not a complete identity
-platform. Replace in-memory examples with durable user storage before production.
+platform. Review password reset, rate limiting, and audit requirements before production.
 
 ## OpenAPI Support
 
@@ -219,8 +214,8 @@ Every generated project includes:
   enabled module metadata.
 - Docs that describe auth, database configuration, and OpenAPI expectations.
 
-Use `cedric doctor .` before and after large automated edits to confirm that the
-project still matches Cedric expectations.
+Use `AGENTS.md` and `.cedric/project.json` before large automated edits to confirm
+project conventions and Cedric metadata.
 
 ## Development
 
@@ -234,7 +229,7 @@ uv build
 ```
 
 The test suite covers project spec validation, CLI commands, generated file
-trees, database switching, and `doctor` failure modes.
+trees, README variants, and legacy command migration messages.
 
 ## Releases
 
@@ -244,10 +239,10 @@ full branch, pull request, sanity check, tag, and release workflow.
 
 ## Compatibility
 
-The old `cedric-setup` command is deprecated. Use:
+The old `cedric-setup` command and v2.0.1 lifecycle commands are removed. Use:
 
 ```bash
-cedric new <name>
+cedric init --name <name>
 ```
 
 The v1 Django-only `src` package has been replaced by the v2 `cedric` package.

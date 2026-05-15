@@ -2,6 +2,12 @@
 
 All notable changes to Cedric are documented here.
 
+## 2.0.3
+
+### Fixed
+
+- Updated published README and release instructions to match the `cedric init` CLI.
+
 ## 2.0.2
 
 ### Added

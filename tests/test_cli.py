@@ -30,7 +30,7 @@ def test_version_command():
     result = runner.invoke(app, ["--version"])
 
     assert result.exit_code == 0
-    assert "Cedric 2.0.2" in result.output
+    assert "Cedric 2.0.3" in result.output
 
 
 def test_init_with_recommended_defaults(tmp_path):
